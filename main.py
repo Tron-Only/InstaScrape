@@ -34,15 +34,15 @@ def scrape_instagram_accounts(
 
                 # Extract data with more specific selectors
                 account_link = result.locator(".default-link-text").inner_text()
-                account_name = result.locator(".wgl-title").inner_text()
-                account_description = result.locator(".description").inner_text()
+                account_name = (
+                    result.locator(".wgl-title").inner_text().split("(")[0].strip()
+                )
 
                 results_data.append(
                     {
                         "Account Number": account_number,
                         "Account Link": account_link,
                         "Account Name": account_name,
-                        "Account Description": account_description,
                     }
                 )
                 account_number += 1
@@ -64,3 +64,6 @@ def scrape_instagram_accounts(
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results_data, f, indent=2, ensure_ascii=False)
+
+
+scrape_instagram_accounts("Basketball", 5)
