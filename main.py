@@ -40,6 +40,16 @@ _WRITERS = {
 }
 
 
+def build_query(niche: str, match_all=True) -> str:
+    site_params = 'site:instagram.com -inurl:"/p" -inurl:"/reel" -inurl:"/reels" -inurl:"/explore"'
+    keywords = niche.split()
+    if match_all:
+        joined = " ".join(f'"{kw}"' for kw in keywords)
+    else:
+        joined = " OR ".join(f'"{kw}"' for kw in keywords)
+    return quote(f"{joined} {site_params}")
+
+
 def scrape_instagram_accounts(
     niche: str,
     max_pages: int = 3,
@@ -50,10 +60,7 @@ def scrape_instagram_accounts(
     if format not in _WRITERS:
         raise ValueError(f"Unsupported format: {format}. Choose from {list(_WRITERS)}")
 
-    site_params = (
-        'site:instagram.com -inurl:"/p" -inurl:"/reel"-inurl:"/reels" -inurl:"/explore"'
-    )
-    query = quote(f"{niche} {site_params}")
+    query = build_query(niche, match_all=True)
     results_data = []
 
     with sync_playwright() as pw:
