@@ -19,7 +19,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: playwright install firefox
       - run: pip install pyinstaller
-      - run: pyinstaller --onefile cli.py --name instascrape
+      - run: pyinstaller --onefile run.py --name instascrape
       - uses: actions/upload-artifact@v4
         with:
           name: instascrape-${{ runner.os }}
