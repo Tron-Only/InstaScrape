@@ -13,14 +13,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: playwright install firefox
-      - run: pip install pyinstaller
-      - run: pyinstaller --onefile run.py --name instascrape
-      - uses: actions/upload-artifact@v4
+
+      - name: Install system deps (Ubuntu only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebp6 libopus0 libharfbuzz0b libffi8 libx264-163 libnss3 libxcomposite1 \
+            libxdamage1 libxrandr2 libasound2 libpangocairo-1.0-0 libxtst6 libxss1 libgtk-3-0
+          sudo playwright install=deps
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install firefox
+
+      - name: Build executable
+        run: pyinstaller --onefile run.py --name instascrape
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: instascrape-${{ runner.os }}
           path: dist/instascrape*
