@@ -69,4 +69,3 @@ Instascrape/
 ├── start.bat            # Windows launcher
 └── README.md            # You're here
 ```
-
