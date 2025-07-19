@@ -64,7 +64,7 @@ def scrape_instagram_accounts(
     results_data = []
 
     with sync_playwright() as pw:
-        browser = pw.firefox.launch(headless=headless)
+        browser = pw.chromium.launch(headless=headless)
         page = browser.new_page()
         page.goto(f"https://www.startpage.com/search?q={query}", timeout=0)
         time.sleep(2)
