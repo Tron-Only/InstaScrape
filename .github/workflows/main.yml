@@ -1,0 +1,26 @@
+name: Build release binaries
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: playwright install firefox
+      - run: pyinstaller --onefile cli.py --name instascrape
+      - uses: actions/upload-artifact@v4
+        with:
+          name: instascrape-${{ runner.os }}
+          path: dist/instascrape*
+          retention-days: 30
