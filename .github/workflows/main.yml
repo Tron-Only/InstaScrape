@@ -13,7 +13,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -22,16 +24,24 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Install Playwright browsers
+      - name: Install Playwright & Chromium
         run: |
-          python -m playwright install firefox
+          python -m playwright install chromium
 
+      # Minimal deps needed by headless Chromium on Ubuntu
       - name: Install system deps (Ubuntu only)
         if: runner.os == 'Linux'
-        run: python -m playwright install-deps firefox
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 \
+            libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0 libgbm1
 
-      - name: Build executable
-        run: pyinstaller --onefile run.py --name instascrape
+      - name: Build executable with embedded browser
+        run: |
+          pyinstaller --onefile \
+            --add-data "$(python -c 'import playwright.driver,pathlib;print(pathlib.Path(playwright.driver.__file__).parent)')/package/.local-browsers:playwright/driver/package/.local-browsers" \
+            run.py --name instascrape
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
