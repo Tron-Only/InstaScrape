@@ -18,6 +18,7 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: playwright install firefox
+      - run: pip install pyinstaller
       - run: pyinstaller --onefile cli.py --name instascrape
       - uses: actions/upload-artifact@v4
         with:
