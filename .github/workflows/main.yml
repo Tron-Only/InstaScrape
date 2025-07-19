@@ -25,23 +25,15 @@ jobs:
           pip install pyinstaller
 
       - name: Install Playwright & Chromium
-        run: |
-          python -m playwright install chromium
+        run: python -m playwright install chromium
 
-      # Minimal deps needed by headless Chromium on Ubuntu
       - name: Install system deps (Ubuntu only)
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 \
-            libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0 libgbm1
+        run: sudo apt-get update && sudo apt-get install -y libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0 libgbm1
 
-      - name: Build executable with embedded browser
+      - name: Build executable
         run: |
-          pyinstaller --onefile \
-            --add-data "$(python -c 'import playwright.driver,pathlib;print(pathlib.Path(playwright.driver.__file__).parent)')/package/.local-browsers:playwright/driver/package/.local-browsers" \
-            run.py --name instascrape
+          pyinstaller --onefile --collect-data playwright --hidden-import playwright.sync_api run.py --name instascrape
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
