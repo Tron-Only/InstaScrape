@@ -71,12 +71,6 @@ out_stem = Prompt.ask(
     default=niche.replace(" ", "_"),
 )
 
-headless = Confirm.ask(
-    "[bold green]Headless mode?[/bold green]  [dim](no browser window)[/dim]",
-    default=True,
-)
-
-
 console.print("\n[bold red]🚀  IGNITION…[/bold red]\n")
 
 with Live(
@@ -87,7 +81,7 @@ with Live(
     scrape_instagram_accounts(
         niche=niche,
         max_pages=pages,
-        headless=headless,
+        headless=False,
         output_path=str(Path(out_stem)),
         format=fmt.lower(),
     )
